@@ -52,6 +52,7 @@
 {% if state.header %}
 <h2>2. 勾选备选列（至多 10 个）并计算对照键</h2>
 <form method="post" action="{{ url_for('columns') }}">
+  <input type="hidden" name="session_id" value="{{ state.session_id }}">
   {% for c in state.header %}
     <label style="margin-right:12px">
       <input type="checkbox" name="columns" value="{{ c }}"
@@ -61,6 +62,7 @@
   <button type="submit">保存备选列</button>
 </form>
 <form method="post" action="{{ url_for('keys_compute') }}" style="margin-top:6px">
+  <input type="hidden" name="session_id" value="{{ state.session_id }}">
   <button type="submit">计算列数最少的合规对照键</button>
 </form>
 {% endif %}
@@ -79,6 +81,7 @@
     <td>
       {% if k.compatible and not k.in_use %}
       <form class="inline" method="post" action="{{ url_for('keys_select') }}">
+        <input type="hidden" name="session_id" value="{{ state.session_id }}">
         <input type="hidden" name="key_id" value="{{ k.id }}">
         <button type="submit">选用</button>
       </form>
@@ -92,6 +95,7 @@
 {% if state.n_a %}
 <h2>4. 复核判定（按两表行号登记 / 撤销）</h2>
 <form method="post" action="{{ url_for('judgments_add') }}">
+  <input type="hidden" name="session_id" value="{{ state.session_id }}">
   旧表行号 <input type="number" name="row_a" min="1" max="{{ state.n_a }}" required>
   新表行号 <input type="number" name="row_b" min="1" max="{{ state.n_b }}" required>
   <select name="typ">
@@ -109,6 +113,7 @@
     <td>{{ j.typ_label }}</td><td>{{ j.created_at }}</td>
     <td>
       <form class="inline" method="post" action="{{ url_for('judgments_revoke') }}">
+        <input type="hidden" name="session_id" value="{{ state.session_id }}">
         <input type="hidden" name="judgment_id" value="{{ j.id }}">
         <button type="submit">撤销</button>
       </form>
@@ -121,7 +126,7 @@
 
 <h2>5. 下载行号对照表（含单边记录）</h2>
 {% if state.can_download %}
-  <p><a href="{{ url_for('download') }}"><button>下载 mapping CSV</button></a></p>
+  <p><a href="{{ url_for('download', session_id=state.session_id) }}"><button>下载 mapping CSV</button></a></p>
 {% else %}
   <p class="muted">当前不可下载：须先选用一个合规对照键（在用键被复核判定失效后会停供，另选可用键即恢复）。</p>
 {% endif %}

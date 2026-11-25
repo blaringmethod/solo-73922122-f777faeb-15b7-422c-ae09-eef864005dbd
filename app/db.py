@@ -47,10 +47,12 @@ def connect(path):
     parent = os.path.dirname(path)
     if parent:
         os.makedirs(parent, exist_ok=True)
-    conn = sqlite3.connect(path, timeout=10)
+    conn = sqlite3.connect(path, timeout=60)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA busy_timeout=10000")
+    # 大台账算键的写事务（候选键 × 数万行投影）可能持锁数十秒，
+    # 并发上传/判定须排队等锁，而不是 10 秒后报 database is locked。
+    conn.execute("PRAGMA busy_timeout=60000")
     return conn
 
 
